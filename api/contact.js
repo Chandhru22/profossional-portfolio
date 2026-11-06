@@ -16,22 +16,45 @@ export default async function handler(req, res) {
   }
 
   try {
+    let payload = req.body;
+
+    // Convert request body into a JavaScript object.
+    if (typeof payload === 'string') {
+      payload = JSON.parse(payload);
+    }
+
+    if (
+      !payload ||
+      typeof payload !== 'object' ||
+      Array.isArray(payload)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid request format.',
+      });
+    }
+
+    console.log('Contact payload fields:', Object.keys(payload));
+
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'text/plain;charset=utf-8',
       },
-      body: JSON.stringify(req.body),
+      body: JSON.stringify(payload),
       redirect: 'follow',
     });
 
     const result = await response.json();
 
-    return res.status(response.ok ? 200 : 502).json(result);
-  } catch {
+    return res.status(200).json(result);
+
+  } catch (error) {
+    console.error('Contact API error:', error);
+
     return res.status(502).json({
       success: false,
-      message: 'Could not reach the contact service.',
+      message: 'Could not process your message.',
     });
   }
 }
