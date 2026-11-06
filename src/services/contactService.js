@@ -7,8 +7,9 @@
 // The frontend only reports success when the server replies with { success: true }.
 // If the reply cannot be read, we say the save is UNVERIFIED instead of claiming success.
 
-const ENDPOINT = import.meta.env.VITE_GOOGLE_SCRIPT_URL;
-
+const ENDPOINT = import.meta.env.DEV
+  ? import.meta.env.VITE_GOOGLE_SCRIPT_URL
+  : '/api/contact';
 export class ContactError extends Error {
   constructor(code, message, fieldErrors = {}) {
     super(message);
